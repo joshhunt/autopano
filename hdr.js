@@ -6,14 +6,13 @@ const moment = require('moment');
 const async = require('async');
 const mkdirp = require('mkdirp');
 const _ = require('lodash');
-const exec = require('child_process').exec;
 
 const piexif = require('./piexif.js');
 
-const { handleError } = require('./utils');
+const { handleError, exec, quotePath } = require('./utils');
 
 const TIME_FORMAT = 'YYYY:MM:DD HH:mm:ss';
-const OUTPUT_FOLDER = 'HDR';
+const OUTPUT_FOLDER = 'work';
 
 function getImageMetadata(image) {
   return new Promise((resolve, reject) => {
@@ -52,15 +51,6 @@ const validateBrackets = (brackets) => {
 
   return brackets;
 }
-
-const quotePath = filePath => `"${filePath}"`
-
-const execPromise = (command) => new Promise((resolve, reject) => {
-  exec(command, (err, stdout, stderr) => {
-    if (err) return reject(err);
-    resolve({stdout, stderr});
-  });
-});
 
 const mkdirpPromise = (dir) => new Promise((resolve, reject) => mkdirp(dir, (err) => {
   if (err) return reject(err);
@@ -116,7 +106,7 @@ const renderBracket = (bracket, cb) => {
   console.log(`Started ${outputFilename}`);
 
   mkdirpPromise(outputFolder)
-    .then(() => execPromise(enfuseCommand))
+    .then(() => exec(enfuseCommand))
     .then(() => wait(500))
     .then(() => transferExif(files[0], outputPath))
     .then(() => cb(null, outputPath))
