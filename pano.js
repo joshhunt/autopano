@@ -52,11 +52,11 @@ module.exports = function pano(images) {
   const PTO_ALIGNED = out('aligned');
   const PTO_CPOINTS = out('cpoints');
   const PTO_CLEANED = out('cleaned');
-  const PTO_CLEAND2 = out('cleand2');
+  const PTO_CLEAND2 = out('cleandd');
   const PTO_OPTMIZD = out('optimzd');
   const PTO_FINLCRP = out('finlcrp');
   const OUT_PARTIAL = out('partial', false);
-  const OUT_PARTIAL_GLOB = out('partial*.tif', false);
+  const OUT_PARTIAL_GLOB = path.join(outputPath, 'partial*.tif').replace(/ /g, '\\ ')
   const OUT_PANORAMA = out('panorama.tif', false);
 
   console.log('\nCreating panorama');
@@ -71,7 +71,7 @@ module.exports = function pano(images) {
 
     .then(pLog(' - cleaning bad control points'))
     .then(() => exec(`celeste_standalone -i ${PTO_CPOINTS} -o ${PTO_CLEANED} -d ${CELESTE_MODEL}`))
-    .then(() => exec(`cpclean --output=${PTO_CLEAND2} ${PTO_CLEANED}`))
+    .then(() => exec(`cpclean -o ${PTO_CLEAND2} ${PTO_CLEANED}`))
 
     .then(pLog(' - optimising'))
     .then(() => exec(`autooptimiser -a -l -s -m -o ${PTO_OPTMIZD} ${PTO_CLEAND2}`))
